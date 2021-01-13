@@ -2,7 +2,7 @@ def problem(parent, sets):
     kara = []
     results = []
     for i in range(len(sets)):
-        wart = len(parent - sets[i]) ** 2 + (len(parent) - len(sets[i])) ** 2
+        wart = .8*len(parent - sets[i]) ** 2 + 0*(len(parent) - len(sets[i])) ** 2 + .2*len(sets[i] - parent)**2
         kara.append(wart)
     unionres = set([])
     k =1

@@ -69,6 +69,7 @@ def open():
     prev_date = cal.get_date()
 
     def grab_date():
+        global picked_ids
         picked_date = cal.get_date()
         # my_label.config(text="Picked Date " + picked_date)
         if picked_date == "":
@@ -93,6 +94,18 @@ def open():
             global prev_date
             prev_date = None
             cal._sel_date = None
+
+    def random_events_button():
+        global picked_ids, endDate, startDate,cal, root
+        ilosc = endDate.timetuple().tm_yday - startDate.timetuple().tm_yday + 1
+        daty = np.unique(np.random.randint(startDate.timetuple().tm_yday, endDate.timetuple().tm_yday + 1,
+                                           np.random.randint(1, ilosc + 1)))
+        for data in daty:
+            datatemp = (datetime(2021, 1, 1) + timedelta(int(data) - 1))
+            if datatemp not in picked_ids["dates"]:
+                picked_ids["ids"].append(cal.calevent_create(datatemp.date(), "picked"))
+                picked_ids["dates"].append(datatemp)
+                picked_ids["indexes"].append(data)
 
     def date_check():
         global prev_date, butText, pick_button, pick_button, startDate, endDate, after2
@@ -184,7 +197,7 @@ def open():
         if len(res - set(PERIODICITY)) > 0 or len(set(PERIODICITY) - res) > 0:
             diffs = []
             diffsplus = []
-            if len(res-set(PERIODICITY)) > 0:
+            if len(res - set(PERIODICITY)) > 0:
                 diffs = sorted(res - set(PERIODICITY))
                 difftxt = "with the exception of "
             if len(set(PERIODICITY) - res) > 0:
@@ -197,14 +210,20 @@ def open():
             for diff in diffsplus:
                 datetemp = (datetime(2021, 1, 1) + timedelta(int(diff) - 1)).strftime('%d/%m/%Y')
                 exceptionplus += f"{datetemp}" if exceptionplus == "" else f", {datetemp}"
-        exceptionplus = diffplus + exceptionplus if exceptionplus != "" else ""
-        exception = difftxt + exception if exception != "" else ""
-        preposition = "on" if msg[0] != 'f' else ""
-        lbl = tkinter.Label(Top,
-                            text=f"The service is provided {preposition} {msg} from {startDate.strftime('%d/%m/%Y')} to {endDate.strftime('%d/%m/%Y')} {exceptionplus} {exception}",
-                            wraplength=300, justify="center").pack(padx=10, pady=10)
+        if PERIODICITY.shape[0] != 0:
+            exceptionplus = diffplus + exceptionplus if exceptionplus != "" else ""
+            exception = difftxt + exception if exception != "" else ""
+            preposition = "on" if msg[0] != 'f' else ""
+            lbl = tkinter.Label(Top,
+                                text=f"The service is provided {preposition} {msg} from {startDate.strftime('%d/%m/%Y')} to {endDate.strftime('%d/%m/%Y')} {exceptionplus} {exception}",
+                                wraplength=300, justify="center").pack(padx=10, pady=10)
+        else:
+            lbl = tkinter.Label(Top,
+                                text=f"The service is not provided from {startDate.strftime('%d/%m/%Y')} to {endDate.strftime('%d/%m/%Y')}",
+                                wraplength=300, justify="center").pack(padx=10, pady=10)
 
     pick_button = tkinter.Button(root, text=butText, command=grab_date)
+    random_button = tkinter.Button(root, text="Select random dates", command=random_events_button)
     end_button = tkinter.Button(root, text="Finish", command=stop_selecting)
     if switch:
         loop = root.after(100, date_check)
@@ -214,6 +233,7 @@ def open():
         loop = None
     my_label.pack(pady=10)
     pick_button.pack(pady=10)
+    random_button.pack(pady=10)
     end_button.pack(padx=100)
 
 
