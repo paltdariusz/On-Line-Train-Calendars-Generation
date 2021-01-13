@@ -5,8 +5,7 @@ from tkinter import messagebox
 from tkcalendar import Calendar, DateEntry
 from datetime import datetime, date, timedelta
 from createClusters import createClusters
-from SCP import greedy_set_cover
-
+from MCSolver import problem
 
 root = tkinter.Tk()
 root.configure(background="white")
@@ -47,7 +46,8 @@ def open():
     switch = True
     if checkProperDate(startDate, endDate) == 0:
         return
-    CLUSTERS, CLUSTERS_NAMES, CLUSTERS_DATES = createClusters(startDate.timetuple().tm_yday, endDate.timetuple().tm_yday)
+    CLUSTERS, CLUSTERS_NAMES, CLUSTERS_DATES = createClusters(startDate.timetuple().tm_yday,
+                                                              endDate.timetuple().tm_yday)
     root.destroy()
     root = tkinter.Tk()
     root.configure(background="white")
@@ -141,10 +141,7 @@ def open():
         switch = False
         root.after_cancel(loop)
         root.after_cancel(after2)
-        # root.destroy()
-        # root = tkinter.Tk()
-        # root.after_cancel(loop)
-        Top = tkinter.Toplevel(root,)
+        Top = tkinter.Toplevel(root, )
         Top.configure(background="white")
         Top.title('Result')
         Top.grab_set()
@@ -153,53 +150,59 @@ def open():
         style = ttk.Style(Top)
         style.theme_use('default')
         # # wyliczamy długość tablicy
-        PERIODICITY = np.zeros((endDate.timetuple().tm_yday-startDate.timetuple().tm_yday+1),int)
+        PERIODICITY = np.zeros((endDate.timetuple().tm_yday - startDate.timetuple().tm_yday + 1), int)
         for i in range(PERIODICITY.shape[0]):
-            PERIODICITY[i] = 0 if i+startDate.timetuple().tm_yday in picked_ids["indexes"] else i+startDate.timetuple().tm_yday #UNIVERSE
-        PERIODICITY = PERIODICITY[PERIODICITY[:]!=0]
-        PRZEROBIONY = np.multiply(CLUSTERS,CLUSTERS_DATES).tolist()
+            PERIODICITY[i] = 0 if i + startDate.timetuple().tm_yday in picked_ids[
+                "indexes"] else i + startDate.timetuple().tm_yday  # UNIVERSE
+        PERIODICITY = PERIODICITY[PERIODICITY[:] != 0]
+        PRZEROBIONY = np.multiply(CLUSTERS, CLUSTERS_DATES).tolist()
         NPRZEROBIONY = []
         NNAZWY = []
         for i in range(len(PRZEROBIONY)):
-            if len(set(filter((0).__ne__, PRZEROBIONY[i]))) > (len(PERIODICITY)+1):
-                continue
             NNAZWY.append(CLUSTERS_NAMES[i])
             NPRZEROBIONY.append(set(filter((0).__ne__, PRZEROBIONY[i])))
-        print("okres", PERIODICITY)
-        print("prze",NPRZEROBIONY)
-        # MATRIX = np.zeros((CLUSTERS.shape[0], CLUSTERS_DATES.shape[0]))
-        # for i in range(MATRIX.shape[0]):
-        #     for j in range(MATRIX.shape[1]):
-        #         if PERIODICITY[j] == CLUSTERS[i][j]:
-        #             MATRIX[i][j] = 1
-        # print(PERIODICITY,'\n')
-        # print(MATRIX)
-        wyniki = greedy_set_cover(NPRZEROBIONY.copy(),set(PERIODICITY.copy()))
+        print("OKRES: ", PERIODICITY)
+        # print("prze",NPRZEROBIONY)
+        wyniki = problem(set(PERIODICITY.copy()), NPRZEROBIONY.copy(), )
         msg = ""
         przerywnik = "," if len(wyniki) > 2 else "plus"
         exception = ""
+        exceptionplus = ""
         res = set([])
-        # print(NPRZEROBIONY[35], "\n", NNAZWY[35])
         for wynik in wyniki:
             idx = NPRZEROBIONY.index(wynik)
             # print(idx)
             if msg == "" and NNAZWY[idx][0] != "f":
                 msg += "'" + NNAZWY[idx] + "'"
             elif msg == "" and NNAZWY[idx][0] == "f":
-                msg += NNAZWY[idx][:5] + "'" + NNAZWY[idx][5:]+"'"
+                msg += NNAZWY[idx][:5] + "'" + NNAZWY[idx][5:] + "'"
             elif NNAZWY[idx][0] == "f":
-                msg += przerywnik + " " + NNAZWY[idx][:5] + "'" + NNAZWY[idx][5:]+"'"
+                msg += przerywnik + " " + NNAZWY[idx][:5] + "'" + NNAZWY[idx][5:] + "'"
             else:
-                msg += f" {przerywnik} on '{NNAZWY[idx]}'"
+                msg += f" {przerywnik} '{NNAZWY[idx]}'"
             res = res | wynik
-        if len(res - set(PERIODICITY)) > 0:
-            diffs = res - set(PERIODICITY)
+        if len(res - set(PERIODICITY)) > 0 or len(set(PERIODICITY) - res) > 0:
+            diffs = []
+            diffsplus = []
+            if len(res-set(PERIODICITY)) > 0:
+                diffs = sorted(res - set(PERIODICITY))
+                difftxt = "with the exception of "
+            if len(set(PERIODICITY) - res) > 0:
+                # print("X")
+                diffsplus = sorted(set(PERIODICITY) - res)
+                diffplus = "plus on "
             for diff in diffs:
-                datetemp = (datetime(2021, 1, 1) + timedelta(diff - 1)).strftime('%d/%m/%Y')
+                datetemp = (datetime(2021, 1, 1) + timedelta(int(diff) - 1)).strftime('%d/%m/%Y')
                 exception += f"{datetemp}" if exception == "" else f", {datetemp}"
-        exception = "with the exception of " + exception if exception!="" else ""
+            for diff in diffsplus:
+                datetemp = (datetime(2021, 1, 1) + timedelta(int(diff) - 1)).strftime('%d/%m/%Y')
+                exceptionplus += f"{datetemp}" if exceptionplus == "" else f", {datetemp}"
+        exceptionplus = diffplus + exceptionplus if exceptionplus != "" else ""
+        exception = difftxt + exception if exception != "" else ""
         preposition = "on" if msg[0] != 'f' else ""
-        lbl = tkinter.Label(Top, text=f"The service is provided {preposition} {msg} from {startDate.strftime('%d/%m/%Y')} to {endDate.strftime('%d/%m/%Y')} {exception}").pack(padx=10, pady=10)
+        lbl = tkinter.Label(Top,
+                            text=f"The service is provided {preposition} {msg} from {startDate.strftime('%d/%m/%Y')} to {endDate.strftime('%d/%m/%Y')} {exceptionplus} {exception}",
+                            wraplength=300, justify="center").pack(padx=10, pady=10)
 
     pick_button = tkinter.Button(root, text=butText, command=grab_date)
     end_button = tkinter.Button(root, text="Finish", command=stop_selecting)
@@ -212,7 +215,6 @@ def open():
     my_label.pack(pady=10)
     pick_button.pack(pady=10)
     end_button.pack(padx=100)
-
 
 
 startCal = DateEntry(root, width=12, year=2021, month=1, day=1, background='darkblue', foreground='white',
