@@ -81,7 +81,7 @@ def open():
             messagebox.showerror("Error", "First select a date!")
             return
         if datetime.strptime(picked_date, "%m/%d/%y") not in picked_ids["dates"]:
-            picked_ids["ids"].append(cal.calevent_create(datetime.strptime(picked_date, "%m/%d/%y"), "picked",'message'))
+            picked_ids["ids"].append(cal.calevent_create(datetime.strptime(picked_date, "%m/%d/%y"), "Not provided",'message'))
             picked_ids["dates"].append(datetime.strptime(picked_date, "%m/%d/%y"))
             date_index = datetime.strptime(picked_date, "%m/%d/%y").timetuple().tm_yday
             picked_ids["indexes"].append(date_index)
@@ -109,7 +109,7 @@ def open():
             for data in daty:
                 datatemp = (datetime(2021, 1, 1) + timedelta(int(data) - 1))
                 if datatemp not in picked_ids["dates"]:
-                    picked_ids["ids"].append(cal.calevent_create(datatemp.date(), "picked","message"))
+                    picked_ids["ids"].append(cal.calevent_create(datatemp.date(), "Not provided","message"))
                     picked_ids["dates"].append(datatemp)
                     picked_ids["indexes"].append(data)
             flagaRandom = False
