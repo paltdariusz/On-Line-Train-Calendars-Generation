@@ -1,8 +1,12 @@
+import numpy as np
 def problem(parent, sets):
     kara = []
     results = []
+    days_working = len(sets[-1])-len(parent)
+    Nparent = parent.copy()
+    a, b, c = 1., 1., 1.
     for i in range(len(sets)):
-        wart = .8*len(parent - sets[i]) ** 2 + 0*(len(parent) - len(sets[i])) ** 2 + .2*len(sets[i] - parent)**2
+        wart = 0*len(parent - sets[i]) ** 2 + 0*(len(parent) - len(sets[i])) ** 2 + 1*len(sets[i] - parent)**2
         kara.append(wart)
     unionres = set([])
     k =1
@@ -10,11 +14,28 @@ def problem(parent, sets):
     while not parent.issubset(unionres):
         # print(k)
         k+=1
-        idx = kara.index(min(kara))
-
+        idxs = np.where(np.array(kara) == min(kara))[0].tolist()
+        setlen = [len(sets[index]) for index in idxs]
+        idx = idxs[setlen.index(max(setlen))]
+        if len(unionres) > 0 and len(unionres - parent) < len((unionres | sets[idx]) - parent):
+            for index in idxs:
+                if len(unionres) > 0 and len(unionres - parent) < len((unionres | sets[index]) - parent):
+                    continue
+                idx = index
         if poprzedni != parent - sets[idx]:
-            if len(unionres) > 0 and len(unionres - parent) < len((unionres | sets[idx]) - parent):
-                break
+            # if len(unionres) > 0 and len(unionres - parent) < len((unionres | sets[idx]) - parent):
+            if len((unionres | sets[idx]) - Nparent) > days_working or len(unionres - Nparent) < len((unionres | sets[idx]) - Nparent):
+                if len((unionres | sets[idx]) - Nparent) > days_working:
+                    zmiana_nadmiaru_po_dodaniu = np.abs(len(unionres - Nparent) - len((unionres | sets[idx]) - Nparent))
+                    zmiana_niedoboru_po_dodaniu = np.abs(len(Nparent - (unionres | sets[idx])) - len(Nparent - unionres))
+                    if zmiana_niedoboru_po_dodaniu < zmiana_nadmiaru_po_dodaniu:
+                        break
+                elif len(unionres - Nparent) < len((unionres | sets[idx]) - Nparent):
+                    zmiana_nadmiaru_po_dodaniu = np.abs(len(unionres - Nparent) - len((unionres | sets[idx]) - Nparent))
+                    zmiana_niedoboru_po_dodaniu = np.abs(len(Nparent - (unionres | sets[idx])) - len(Nparent - unionres))
+                    if len(Nparent - unionres) <= days_working and zmiana_niedoboru_po_dodaniu < zmiana_nadmiaru_po_dodaniu:
+                        print(2)
+                        break
             results.append(sets[idx])
             unionres |= sets[idx]
             # print(f"BEF: {parent}")
@@ -24,9 +45,9 @@ def problem(parent, sets):
         kara = []
         del sets[idx]
         for i in range(len(sets)):
-            wart = len(parent - sets[i]) ** 2 + (len(parent) - len(sets[i])) ** 2
+            wart = a*len(parent - sets[i]) ** 2 + 0*(len(parent) - len(sets[i])) ** 2 + c*len(sets[i] - parent)**2
             kara.append(wart)
-        print(f"RESULTS: {results}")
+    print(f"RESULTS: {results}")
     return results
 
 
