@@ -2,7 +2,7 @@ import tkinter
 import numpy as np
 from tkinter import ttk
 from tkinter import messagebox
-from tkcalendar import Calendar,DateEntry
+from tkcalendar import Calendar, DateEntry
 from datetime import datetime, date, timedelta
 from createClusters import createClusters
 from MCSolver import problem
@@ -26,7 +26,7 @@ picked_ids = {
     "dates": [],
     "indexes": [],
 }
-startDate=None
+startDate = None
 endDate = None
 
 
@@ -44,7 +44,7 @@ def checkProperDate(start, end):
 
 
 def open():
-    global cal, end_button, pick_button, prev_date, root, startCal, endCal, startDate, endDate, CLUSTERS, CLUSTERS_NAMES, CLUSTERS_DATES, loop, flagaRandom, random_button, randtxt,startDate, endDate
+    global cal, end_button, pick_button, prev_date, root, startCal, endCal, startDate, endDate, CLUSTERS, CLUSTERS_NAMES, CLUSTERS_DATES, loop, flagaRandom, random_button, randtxt, startDate, endDate
     if not startDate:
         startDate = startCal.get_date()
         endDate = endCal.get_date()
@@ -81,7 +81,8 @@ def open():
             messagebox.showerror("Error", "First select a date!")
             return
         if datetime.strptime(picked_date, "%m/%d/%y") not in picked_ids["dates"]:
-            picked_ids["ids"].append(cal.calevent_create(datetime.strptime(picked_date, "%m/%d/%y"), "Not provided",'message'))
+            picked_ids["ids"].append(
+                cal.calevent_create(datetime.strptime(picked_date, "%m/%d/%y"), "Not provided", 'message'))
             picked_ids["dates"].append(datetime.strptime(picked_date, "%m/%d/%y"))
             date_index = datetime.strptime(picked_date, "%m/%d/%y").timetuple().tm_yday
             picked_ids["indexes"].append(date_index)
@@ -101,7 +102,7 @@ def open():
             cal._sel_date = None
 
     def random_events_button():
-        global picked_ids, endDate, startDate,cal, root, flagaRandom, randtxt, random_button
+        global picked_ids, endDate, startDate, cal, root, flagaRandom, randtxt, random_button
         if flagaRandom:
             ilosc = endDate.timetuple().tm_yday - startDate.timetuple().tm_yday + 1
             daty = np.unique(np.random.randint(startDate.timetuple().tm_yday, endDate.timetuple().tm_yday + 1,
@@ -109,7 +110,7 @@ def open():
             for data in daty:
                 datatemp = (datetime(2021, 1, 1) + timedelta(int(data) - 1))
                 if datatemp not in picked_ids["dates"]:
-                    picked_ids["ids"].append(cal.calevent_create(datatemp.date(), "Not provided","message"))
+                    picked_ids["ids"].append(cal.calevent_create(datatemp.date(), "Not provided", "message"))
                     picked_ids["dates"].append(datatemp)
                     picked_ids["indexes"].append(data)
             flagaRandom = False
@@ -124,7 +125,6 @@ def open():
             picked_ids["indexes"] = []
         if pick_button.winfo_exists():
             random_button["text"] = randtxt
-
 
     def date_check():
         global prev_date, butText, pick_button, pick_button, startDate, endDate, after2
@@ -166,7 +166,7 @@ def open():
         for date in picked_ids["dates"]:
             dates.append(datetime.strftime(date, '%d/%m/%y'))
         dates = str(dates).replace('\'', '').replace(', ', ', ').replace('[', '').replace(']', '')
-        my_label.config(text=f"Selected dates: {dates}",wraplength=1000, justify="center")
+        my_label.config(text=f"Selected dates: {dates}", wraplength=1000, justify="center")
 
     def results():
         global picked_ids, startDate, endDate, root, switch, img, loop, after2, CLUSTERS, CLUSTERS_NAMES, CLUSTERS_DATES, PRZEROBIONY, Top, restart_button
@@ -244,6 +244,7 @@ def open():
 
         def restart():
             global Top, open, butText, randtxt, indexes, picked_ids, flagaRandom
+
             def clear():
 
                 # for windows
@@ -253,6 +254,7 @@ def open():
                     # for mac and linux(here, os.name is 'posix')
                 else:
                     _ = os.system('clear')
+
             clear()
             flagaRandom = True
             butText = "Pick Date"
@@ -266,7 +268,7 @@ def open():
             Top.destroy()
             open()
 
-        restart_button = tkinter.Button(Top,text="Restart program", command=restart).pack(padx=10, pady=10)
+        restart_button = tkinter.Button(Top, text="Restart program", command=restart).pack(padx=10, pady=10)
 
     pick_button = tkinter.Button(root, text=butText, command=grab_date)
     random_button = tkinter.Button(root, text=randtxt, command=random_events_button)

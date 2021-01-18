@@ -110,12 +110,13 @@ def createClusters(startidx, endidx):
                      "from Saturday to Thursday, from Sunday to Friday, Days before Holidays, Holidays, " \
                      "Working days, All days".split(", ")
     # CLUSTERS_DATES = np.array([(datetime.datetime(2021, 1, 1) + datetime.timedelta(i - 1)).strftime("%d/%m/%Y") for i in range(startidx, endidx+1)])
-    CLUSTERS_DATES = np.array([(datetime.datetime(2021, 1, 1) + datetime.timedelta(i - 1)).timetuple().tm_yday for i in range(startidx, endidx+1)])
-    return CLUSTERS[:,startidx-1:endidx], CLUSTERS_NAMES, CLUSTERS_DATES,
+    CLUSTERS_DATES = np.array([(datetime.datetime(2021, 1, 1) + datetime.timedelta(i - 1)).timetuple().tm_yday for i in
+                               range(startidx, endidx + 1)])
+    return CLUSTERS[:, startidx - 1:endidx], CLUSTERS_NAMES, CLUSTERS_DATES,
 
 
 if __name__ == "__main__":
-    x,y,z = createClusters(1,3)
+    x, y, z = createClusters(1, 3)
     print(len(x), len(y))
 
     print(x.shape)

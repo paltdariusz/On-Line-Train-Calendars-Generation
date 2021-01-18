@@ -4,11 +4,11 @@ import numpy as np
 def optimal_solution(results, sets):
     for i in range(len(results)):
         for j in range(len(results)):
-            if i==j:
+            if i == j:
                 continue
             else:
-                if results[i]|results[j] in sets:
-                    results.append(results[i]|results[j])
+                if results[i] | results[j] in sets:
+                    results.append(results[i] | results[j])
                     if i > j:
                         del results[i]
                         del results[j]
@@ -16,25 +16,25 @@ def optimal_solution(results, sets):
                         del results[j]
                         del results[i]
                     print(results)
-                    return optimal_solution(results,sets)
+                    return optimal_solution(results, sets)
     return results
 
 
 def problem(parent, sets):
     kara = []
     results = []
-    days_working = len(sets[-1])-len(parent)
+    days_working = len(sets[-1]) - len(parent)
     Nparent = parent.copy()
     a, b, c = 1., 1., 1.
     for i in range(len(sets)):
-        wart = 0*len(parent - sets[i]) ** 2 + 0*(len(parent) - len(sets[i])) ** 2 + 1*len(sets[i] - parent)**2
+        wart = 0 * len(parent - sets[i]) ** 2 + 0 * (len(parent) - len(sets[i])) ** 2 + 1 * len(sets[i] - parent) ** 2
         kara.append(wart)
     unionres = set([])
-    k =1
+    k = 1
     poprzedni = {}
     while not parent.issubset(unionres):
         # print(k)
-        k+=1
+        k += 1
         idxs = np.where(np.array(kara) == min(kara))[0].tolist()
         setlen = [len(sets[index]) for index in idxs]
         idx = idxs[setlen.index(max(setlen))]
@@ -45,16 +45,20 @@ def problem(parent, sets):
                 idx = index
         if poprzedni != parent - sets[idx]:
             # if len(unionres) > 0 and len(unionres - parent) < len((unionres | sets[idx]) - parent):
-            if len((unionres | sets[idx]) - Nparent) > days_working or len(unionres - Nparent) < len((unionres | sets[idx]) - Nparent):
+            if len((unionres | sets[idx]) - Nparent) > days_working or len(unionres - Nparent) < len(
+                    (unionres | sets[idx]) - Nparent):
                 if len((unionres | sets[idx]) - Nparent) > days_working:
                     zmiana_nadmiaru_po_dodaniu = np.abs(len(unionres - Nparent) - len((unionres | sets[idx]) - Nparent))
-                    zmiana_niedoboru_po_dodaniu = np.abs(len(Nparent - (unionres | sets[idx])) - len(Nparent - unionres))
+                    zmiana_niedoboru_po_dodaniu = np.abs(
+                        len(Nparent - (unionres | sets[idx])) - len(Nparent - unionres))
                     if zmiana_niedoboru_po_dodaniu < zmiana_nadmiaru_po_dodaniu:
                         break
                 elif len(unionres - Nparent) < len((unionres | sets[idx]) - Nparent):
                     zmiana_nadmiaru_po_dodaniu = np.abs(len(unionres - Nparent) - len((unionres | sets[idx]) - Nparent))
-                    zmiana_niedoboru_po_dodaniu = np.abs(len(Nparent - (unionres | sets[idx])) - len(Nparent - unionres))
-                    if len(Nparent - unionres) <= days_working and zmiana_niedoboru_po_dodaniu < zmiana_nadmiaru_po_dodaniu:
+                    zmiana_niedoboru_po_dodaniu = np.abs(
+                        len(Nparent - (unionres | sets[idx])) - len(Nparent - unionres))
+                    if len(
+                            Nparent - unionres) <= days_working and zmiana_niedoboru_po_dodaniu < zmiana_nadmiaru_po_dodaniu:
                         break
             results.append(sets[idx])
             unionres |= sets[idx]
@@ -65,14 +69,13 @@ def problem(parent, sets):
         kara = []
         del sets[idx]
         for i in range(len(sets)):
-            wart = a*len(parent - sets[i]) ** 2 + 0*(len(parent) - len(sets[i])) ** 2 + c*len(sets[i] - parent)**2
+            wart = a * len(parent - sets[i]) ** 2 + 0 * (len(parent) - len(sets[i])) ** 2 + c * len(
+                sets[i] - parent) ** 2
             kara.append(wart)
     print(f"NON OPTIMAL RESULTS: {results}")
-    optimal_res = optimal_solution(results.copy(),sets.copy())
+    optimal_res = optimal_solution(results.copy(), sets.copy())
     print(f"OPTIMAL RESULTS: {optimal_res}")
     return optimal_res
-
-
 
 
 if __name__ == "__main__":
@@ -91,4 +94,4 @@ if __name__ == "__main__":
             {1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 15}, {2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14},
             {1, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15}, {9, 2, 5}, {1, 10, 3, 6}, {4, 5, 7, 8, 11, 12, 13, 14, 15},
             {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}]
-    print(problem(parent,sets))
+    print(problem(parent, sets))
