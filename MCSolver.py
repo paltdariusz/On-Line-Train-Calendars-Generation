@@ -1,4 +1,25 @@
 import numpy as np
+
+
+def optimal_solution(results, sets):
+    for i in range(len(results)):
+        for j in range(len(results)):
+            if i==j:
+                continue
+            else:
+                if results[i]|results[j] in sets:
+                    results.append(results[i]|results[j])
+                    if i > j:
+                        del results[i]
+                        del results[j]
+                    else:
+                        del results[j]
+                        del results[i]
+                    print(results)
+                    return optimal_solution(results,sets)
+    return results
+
+
 def problem(parent, sets):
     kara = []
     results = []
@@ -34,7 +55,6 @@ def problem(parent, sets):
                     zmiana_nadmiaru_po_dodaniu = np.abs(len(unionres - Nparent) - len((unionres | sets[idx]) - Nparent))
                     zmiana_niedoboru_po_dodaniu = np.abs(len(Nparent - (unionres | sets[idx])) - len(Nparent - unionres))
                     if len(Nparent - unionres) <= days_working and zmiana_niedoboru_po_dodaniu < zmiana_nadmiaru_po_dodaniu:
-                        print(2)
                         break
             results.append(sets[idx])
             unionres |= sets[idx]
@@ -47,8 +67,12 @@ def problem(parent, sets):
         for i in range(len(sets)):
             wart = a*len(parent - sets[i]) ** 2 + 0*(len(parent) - len(sets[i])) ** 2 + c*len(sets[i] - parent)**2
             kara.append(wart)
-    print(f"RESULTS: {results}")
-    return results
+    print(f"NON OPTIMAL RESULTS: {results}")
+    optimal_res = optimal_solution(results.copy(),sets.copy())
+    print(f"OPTIMAL RESULTS: {optimal_res}")
+    return optimal_res
+
+
 
 
 if __name__ == "__main__":
