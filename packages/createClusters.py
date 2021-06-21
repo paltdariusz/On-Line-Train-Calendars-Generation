@@ -2,8 +2,6 @@ import datetime
 import numpy as np
 
 
-# datetime.strptime(picked_date, "%m/%d/%y").timetuple().tm_yday
-
 def createClusters(startidx, endidx):
     # pojedyncze
     MOS = np.array([1 if (i + 3) % 7 == 0 else 0 for i in range(1, 366)])

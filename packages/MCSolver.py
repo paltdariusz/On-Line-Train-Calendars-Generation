@@ -15,7 +15,6 @@ def optimal_solution(results, sets):
                     else:
                         del results[j]
                         del results[i]
-                    # print(results)
                     return optimal_solution(results, sets)
     return results
 

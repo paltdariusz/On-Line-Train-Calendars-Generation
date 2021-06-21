@@ -4,14 +4,14 @@ from tkinter import ttk
 from tkinter import messagebox
 from tkcalendar import Calendar, DateEntry
 from datetime import datetime, date, timedelta
-from createClusters import createClusters
-from MCSolver import problem
+from packages.createClusters import createClusters
+from packages.MCSolver import problem
 import os
 
 root = tkinter.Tk()
 root.configure(background="white")
 root.title('Date Picker')
-img = tkinter.Image("photo", file="calendar.gif")
+img = tkinter.Image("photo", file="data/calendar.gif")
 # root.iconphoto(True, img) # you may also want to try this.
 root.tk.call('wm', 'iconphoto', root._w, img)
 
@@ -57,7 +57,7 @@ def open():
     root = tkinter.Tk()
     root.configure(background="white")
     root.title('Date Picker')
-    img = tkinter.Image("photo", file="calendar.gif")
+    img = tkinter.Image("photo", file="data/calendar.gif")
     root.tk.call('wm', 'iconphoto', root._w, img)
 
     style = ttk.Style(root)
@@ -178,7 +178,7 @@ def open():
         Top.configure(background="white")
         Top.title('Result')
         Top.grab_set()
-        img = tkinter.Image("photo", file="calendar.gif")
+        img = tkinter.Image("photo", file="data/calendar.gif")
         # root.tk.call('wm', 'iconphoto', root._w, img)
         style = ttk.Style(Top)
         style.theme_use('default')
@@ -293,5 +293,4 @@ startCal.pack(padx=10, pady=10)
 endLab = tkinter.Label(root, text="Select end date: ").pack(padx=10)
 endCal.pack(padx=10, pady=10)
 next_button = tkinter.Button(root, text="Proceed", command=open).pack()
-# Top.grab_set()
 root.mainloop()
