@@ -19,8 +19,8 @@ The Service Schedule Optimizer is a sophisticated tool designed to help operator
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/train-calendar-generator.git
-cd train-calendar-generator
+git clone https://github.com/paltdariusz/Service-Schedule-Optimizer.git
+cd Service-Schedule-Optimizer
 ```
 2. Install required dependencies:
 ```bash
