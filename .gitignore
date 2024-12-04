@@ -1,4 +1,5 @@
-ConflictResolution.pdf
-Scheduling_overnight_trains_for_improving_both_las.pdf
-/.vscode/
-/wyniki
+*.pdf
+__pycache__
+.DS_Store
+.vscode
+.pytest_cache
